@@ -323,17 +323,19 @@ def checkingGuessedLetter(character, numGuessesLeft, WordCharsList,EquiWordChars
         error=True
     return(numGuessesLeft,hiddenWordCharsList,hiddenWordString,error)
 
-def WinOrLoseStatus(wins,hidden_chars_word_list, guessesLeft):
+def WinOrLoseStatus(wins, hidden_chars_word_list, guessesLeft, word):
     indices=[]
     for i in range(0, len(hidden_chars_word_list)):
         if hidden_chars_word_list[i] == '-' :
             indices.append(i)
     if len(indices)==0:
         print('CONGRATULATIONS! YOU WIN!')
+        print(f'The word was: {word}')
         wins+=1
         return True, wins
     elif len(indices)!=0 and guessesLeft==0:
         print('SORRY, YOU ARE HANGED')
+        print(f'The word was: {word}')
         return True, wins
     else:
         return None, wins
@@ -360,18 +362,18 @@ def StartOfGame():
     hidden_chars_word=HideCharsInWord(word)
     hidden_word=listToString(hidden_chars_word)
     index_hangman=0
-    return index_hangman, original_guesses, no_of_guesses, word_to_list, equivalent_word_to_list, hidden_chars_word, hidden_word, upper_case_letters, lower_case_Letters, lower_case_list, upper_case_list, guessed_letters
+    return index_hangman, original_guesses, no_of_guesses, word_to_list, equivalent_word_to_list, hidden_chars_word, hidden_word, upper_case_letters, lower_case_Letters, lower_case_list, upper_case_list, guessed_letters, word
 
 def GameProper():
-    index_hangman, original_guesses, no_of_guesses, word_to_list, equivalent_word_to_list, hidden_chars_word, hidden_word, upper_case_letters, lower_case_Letters, lower_case_list, upper_case_list, guessed_letters = StartOfGame()
+    index_hangman, original_guesses, no_of_guesses, word_to_list, equivalent_word_to_list, hidden_chars_word, hidden_word, upper_case_letters, lower_case_Letters, lower_case_list, upper_case_list, guessed_letters, word = StartOfGame()
     man_in_gallows_upper, man_in_gallow_lower, body_part_to_be_added_=initialStickmanParts()
     man_in_gallows_str=StickManFigureAdjusted(no_of_guesses, man_in_gallows_upper, man_in_gallow_lower, body_part_to_be_added_)
     head_to_legs_indices=IndexPositionStickmanParts(man_in_gallows_str,no_of_guesses)
     hiddenManParts_Gallows_list, hiddenMan_Gallows_list=HideStickmanPartsLs(man_in_gallows_str, head_to_legs_indices)
     hiddenMan_Gallows_str, revealed_hidden_man=HideStickmanPartsStr(hiddenMan_Gallows_list)
-    return index_hangman, original_guesses, no_of_guesses, word_to_list, equivalent_word_to_list, hidden_chars_word, hidden_word, upper_case_letters, lower_case_Letters, lower_case_list, upper_case_list, guessed_letters, man_in_gallows_upper, man_in_gallow_lower, body_part_to_be_added_, man_in_gallows_str, head_to_legs_indices, hiddenManParts_Gallows_list, hiddenMan_Gallows_list, hiddenMan_Gallows_str, revealed_hidden_man
+    return index_hangman, original_guesses, no_of_guesses, word_to_list, equivalent_word_to_list, hidden_chars_word, hidden_word, upper_case_letters, lower_case_Letters, lower_case_list, upper_case_list, guessed_letters, man_in_gallows_upper, man_in_gallow_lower, body_part_to_be_added_, man_in_gallows_str, head_to_legs_indices, hiddenManParts_Gallows_list, hiddenMan_Gallows_list, hiddenMan_Gallows_str, revealed_hidden_man, word
 
-index_hangman, original_guesses, no_of_guesses, word_to_list, equivalent_word_to_list, hidden_chars_word, hidden_word, upper_case_letters, lower_case_Letters, lower_case_list, upper_case_list, guessed_letters, man_in_gallows_upper, man_in_gallow_lower, body_part_to_be_added_, man_in_gallows_str, head_to_legs_indices, hiddenManParts_Gallows_list, hiddenMan_Gallows_list, hiddenMan_Gallows_str, revealed_hidden_man = GameProper()
+index_hangman, original_guesses, no_of_guesses, word_to_list, equivalent_word_to_list, hidden_chars_word, hidden_word, upper_case_letters, lower_case_Letters, lower_case_list, upper_case_list, guessed_letters, man_in_gallows_upper, man_in_gallow_lower, body_part_to_be_added_, man_in_gallows_str, head_to_legs_indices, hiddenManParts_Gallows_list, hiddenMan_Gallows_list, hiddenMan_Gallows_str, revealed_hidden_man, word = GameProper()
 wins=0
 totalgame=1
 if original_guesses<6:
@@ -379,14 +381,14 @@ if original_guesses<6:
 
 while True:
     GameStatus(no_of_guesses,hidden_word,upper_case_list)
-    endOfOneGame, wins = WinOrLoseStatus(wins,hidden_word, no_of_guesses)
+    endOfOneGame, wins = WinOrLoseStatus(wins, hidden_word, no_of_guesses, word)
     if endOfOneGame == True:
         print(f'Total Wins for All Games Played:{wins}/{totalgame}')
         if PlayAgain()==False:
             break
         else:
             totalgame+=1
-            index_hangman, original_guesses, no_of_guesses, word_to_list, equivalent_word_to_list, hidden_chars_word, hidden_word, upper_case_letters, lower_case_Letters, lower_case_list, upper_case_list, guessed_letters, man_in_gallows_upper, man_in_gallow_lower, body_part_to_be_added_, man_in_gallows_str, head_to_legs_indices, hiddenManParts_Gallows_list, hiddenMan_Gallows_list, hiddenMan_Gallows_str, revealed_hidden_man = GameProper()
+            index_hangman, original_guesses, no_of_guesses, word_to_list, equivalent_word_to_list, hidden_chars_word, hidden_word, upper_case_letters, lower_case_Letters, lower_case_list, upper_case_list, guessed_letters, man_in_gallows_upper, man_in_gallow_lower, body_part_to_be_added_, man_in_gallows_str, head_to_legs_indices, hiddenManParts_Gallows_list, hiddenMan_Gallows_list, hiddenMan_Gallows_str, revealed_hidden_man, word = GameProper()
             if original_guesses<6:
                 grouped_head_to_leg_indices, grouped_hiddenManParts_Gallows_list = GroupedIndicesPartsForLessThanSixInputs(original_guesses, head_to_legs_indices, hiddenManParts_Gallows_list)
             GameStatus(no_of_guesses,hidden_word,upper_case_list)
