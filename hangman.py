@@ -37,16 +37,69 @@ def intro():
     print("")
 
 def randomizer():
-    wordList = ['DOG', 'CAT', 'ELEPHANT', 'GIRAFFE', 'LION', 'TIGER', 'ZEBRA', 'RABBIT', 'FROG', 'SNAKE', 'APPLE', 'BANANA', 'ORANGE', 'GRAPE', 'KIWI', 'PEACH', 'PEAR', 'MELON', 'RED', 'BLUE', 'GREEN', 'YELLOW', 'PURPLE', 'ORANGE', 'PINK', 'BLACK', 'WHITE', 'BROWN', 'USA', 'CANADA', 'BRAZIL', 'INDIA', 'CHINA', 'JAPAN', 'FRANCE', 'GERMANY', 'AUSTRALIA', 'RUSSIA', 'SOCCER', 'BASKETBALL', 'TENNIS', 'BASEBALL', 'VOLLEYBALL', 'SWIMMING', 'BOXING', 'GOLF', 'CRICKET','JOHNNY','ANGEL']
+    wordList = ['DOG', 'CAT', 'ELEPHANT', 'GIRAFFE', 'LION', 'TIGER', 'ZEBRA', 'RABBIT', 'FROG', 'SNAKE', 'APPLE', 'BANANA', 'ORANGE', 'GRAPE', 'KIWI', 'PEACH', 'PEAR', 'MELON', 'RED', 'BLUE', 'GREEN', 'YELLOW', 'PURPLE', 'ORANGE', 'PINK', 'BLACK', 'WHITE', 'BROWN', 'USA', 'CANADA', 'BRAZIL', 'INDIA', 'CHINA', 'JAPAN', 'FRANCE', 'GERMANY', 'AUSTRALIA', 'RUSSIA', 'SOCCER', 'BASKETBALL', 'TENNIS', 'BASEBALL', 'VOLLEYBALL', 'SWIMMING', 'BOXING', 'GOLF', 'CRICKET','ANGEL']
     random_index = int((random.random()) * len(wordList) - 1)
     random_word = wordList[random_index]
-    print(f'\nHere is the word to be guessed by your opponent: {random_word}')
+    hidden_word = '*' * len(random_word)
+    print(f'\nHere is the word to be guessed by your opponent: {hidden_word}')
     return random_word
 
-def setting_num_Guess():
+def countUniqueCharacters(word):
+    unique_chars = set(word)
+    return len(unique_chars)
+
+def setting_num_Guess(word):
+    unique_char_count = countUniqueCharacters(word)
     print('\nPlease enter the number of guesses allowed:')
-    num_guesses_allowed=int(input())
-    return num_guesses_allowed
+    try:
+        num_guesses_allowed = int(input())
+        if num_guesses_allowed <= 0:
+            print('Invalid Input. Please choose a valid integer greater than 0.')
+            return setting_num_Guess(word)
+        if num_guesses_allowed < unique_char_count:
+            print(f'Invalid Input. Minimum guesses required is {unique_char_count}')
+            return setting_num_Guess(word)
+        return num_guesses_allowed
+    except ValueError:
+        print('Invalid Input. Please choose a valid intnoeger greater than 0.')
+        return setting_num_Guess(word)
+
+def getHiddenInput(prompt):
+    import sys
+    import tty
+    import termios
+    
+    sys.stdout.write(prompt)
+    sys.stdout.flush()
+    word = ""
+    
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    
+    try:
+        tty.setraw(fd)
+        
+        while True:
+            char = sys.stdin.read(1)
+            
+            if char == '\n' or char == '\r': 
+                sys.stdout.write('\n')
+                sys.stdout.flush()
+                break
+            elif char == '\x7f' or char == '\b': 
+                if word:
+                    word = word[:-1]
+                    sys.stdout.write('\b \b')  
+                    sys.stdout.flush()
+            elif ord(char) >= 32:  
+                word += char
+                sys.stdout.write('*') 
+                sys.stdout.flush()
+    finally:
+        # Restore terminal settings
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    
+    return word.upper()
 
 def SettingWordToGuess():
     print("Would you like the program to choose a random word? (Yes/No)")
@@ -55,7 +108,8 @@ def SettingWordToGuess():
         wordGuess = randomizer()
     elif randomness == 'no' or randomness == 'No':
         print('\nPlease enter a word for the other player to guess:')
-        wordGuess = input()
+        wordGuess = getHiddenInput('Word: ')
+        hidden_word = '*' * len(wordGuess)
     else:
         print('Invalid Input.')
         print('\n')
@@ -298,7 +352,7 @@ def PlayAgain():
 def StartOfGame():
     intro()
     word=SettingWordToGuess()
-    no_of_guesses=setting_num_Guess()
+    no_of_guesses=setting_num_Guess(word)
     original_guesses=no_of_guesses
     word_to_list=wordToList(word)
     upper_case_letters, lower_case_Letters, lower_case_list, upper_case_list, guessed_letters = initializeVars()
